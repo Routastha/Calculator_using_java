@@ -1,0 +1,53 @@
+import java.io.*;
+import java.net.*;
+
+public class CalculatorServer {
+    public static void main(String[] args) {
+        try (ServerSocket serverSocket = new ServerSocket(8080)) {
+            System.out.println("Server started. Waiting for clients...");
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Client connected.");
+
+                BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                PrintWriter output = new PrintWriter(clientSocket.getOutputStream(), true);
+
+                String operation = input.readLine();
+                double num1 = Double.parseDouble(input.readLine());
+                double num2 = Double.parseDouble(input.readLine());
+
+                double result = 0;
+
+                switch (operation) {
+                    case "add":
+                        result = num1 + num2;
+                        break;
+                    case "subtract":
+                        result = num1 - num2;
+                        break;
+                    case "multiply":
+                        result = num1 * num2;
+                        break;
+                    case "divide":
+                        if (num2 != 0) {
+                            result = num1 / num2;
+                        } else {
+                            output.println("Error: Cannot divide by zero.");
+                            continue;
+                        }
+                        break;
+                    default:
+                        output.println("Error: Invalid operation.");
+                        continue;
+                }
+
+                output.println("Result: " + result);
+
+                clientSocket.close();
+                System.out.println("Client disconnected.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}

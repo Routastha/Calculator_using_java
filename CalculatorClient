@@ -1,0 +1,29 @@
+import java.io.*;
+import java.net.*;
+
+public class CalculatorClient {
+    public static void main(String[] args) {
+        try (Socket socket = new Socket("localhost", 8080)) {
+            BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+            PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader serverResponse = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            System.out.print("Enter operation (add, subtract, multiply, divide): ");
+            String operation = input.readLine();
+            output.println(operation);
+
+            System.out.print("Enter first number: ");
+            double num1 = Double.parseDouble(input.readLine());
+            output.println(num1);
+
+            System.out.print("Enter second number: ");
+            double num2 = Double.parseDouble(input.readLine());
+            output.println(num2);
+
+            String response = serverResponse.readLine();
+            System.out.println("Server response: " + response);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
